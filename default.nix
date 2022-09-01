@@ -3,7 +3,7 @@ with pkgs;
 let wechat = stdenvNoCC.mkDerivation {
   pname = "wechat-uos";
   version = "2.1.5";
-  src = ./.;
+  src = ./src;
   deb = fetchurl {
     url = "https://home-store-packages.uniontech.com/appstore/pool/appstore/c/com.tencent.weixin/com.tencent.weixin_2.1.5_amd64.deb";
     sha256 = "1091nbf7avp3i45yh8qpsg5chlh17yf4cdgq4z6d8p0gxb1pnlxx";
@@ -50,25 +50,26 @@ let wechat = stdenvNoCC.mkDerivation {
   '';
 };
 wechat-uos-env = stdenvNoCC.mkDerivation{
+    meta.priority = 1;
     name  = "wechat-uos-env";
     buildCommand = ''
       mkdir -p $out/etc
-      mkdir -p $out/usr/lib
-      mkdir -p $out/usr/var
+      mkdir -p $out/lib
+      mkdir -p $out/opt
       ln -s ${wechat}/usr/share/wechat-uos/etc/os-release  $out/etc/os-release
       ln -s ${wechat}/usr/share/wechat-uos/etc/lsb-release  $out/etc/lsb-release
-      ln -s ${wechat}/usr/lib/wechat-uos/license  $out/usr/lib/license
-      ln -s ${wechat}/usr/share/wechat-uos/var $out/var
+      ln -s ${wechat}/usr/lib/wechat-uos/license  $out/lib/license
+      ln -s ${wechat} $out/opt/wechat-root
     '';
     preferLocalBuild = true;
 };
 in
 buildFHSUserEnv{
   inherit (wechat) name meta;
-  #runScript = "${wechat.outPath}/bin/wechat-uos";
+  runScript = "${wechat.outPath}/bin/wechat-uos";
   extraInstallCommands = ''
     mv $out/bin/$name $out/bin/wechat-uos
   '';
-  targetPkgs = pkgs: [wechat-uos-env];
-  
+  targetPkgs = pkgs: [wechat-uos-env openssl dbus];
+  extraOutputsToInstall = ["usr" "var/lib/uos" "var/uos" "etc"];
 }
