@@ -7,6 +7,7 @@ let wechat = stdenvNoCC.mkDerivation {
   deb = fetchurl {
     url = "https://home-store-packages.uniontech.com/appstore/pool/appstore/c/com.tencent.weixin/com.tencent.weixin_2.1.5_amd64.deb";
     sha256 = "1091nbf7avp3i45yh8qpsg5chlh17yf4cdgq4z6d8p0gxb1pnlxx";
+    meta.license = lib.licenses.unfree;
   };
   buildInputs = [ electron dpkg lsb-release bubblewrap ];
   inherit bubblewrap;
