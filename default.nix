@@ -68,7 +68,10 @@ buildFHSUserEnv{
   inherit (wechat) name meta;
   runScript = "${wechat.outPath}/bin/wechat-uos";
   extraInstallCommands = ''
+    mkdir -p $out/share/applications
     mv $out/bin/$name $out/bin/wechat-uos
+    ln -s ${wechat.outPath}/share/applications/wechat-uos.desktop $out/share/applications
+    cp -r ${wechat.outPath}/share/icons/ $out/share/icons
   '';
   targetPkgs = pkgs: [wechat-uos-env openssl dbus];
   extraOutputsToInstall = ["usr" "var/lib/uos" "var/uos" "etc"];
